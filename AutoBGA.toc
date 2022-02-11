@@ -1,0 +1,6 @@
+## Interface: 25300
+## Title |cfff5deb3AutoBGA
+## Notes: Auto sets 'Assist Everyone' in Battleground.
+## Author: Ferib Hellscream
+
+AutoBGA.lua

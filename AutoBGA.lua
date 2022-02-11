@@ -3,31 +3,12 @@ local frame = CreateFrame("frame")
 local lastTick = 0
 local lastAutoJoin = 0
 
-local function tick()
-	-- tick on 0.5s interval
-	local tick = GetTime()
-	if lastTick + 0.5 > tick then return end
-	lastTick = tick
-	
-	-- get Queued info
-	for i=1, 10 do
-		local status = GetBattlefieldStatus(i)
-		if status == "none" then
-			-- Do nothing
-		elseif status == "active" then
-			if not CompactRaidFrameManagerDisplayFrameEveryoneIsAssistButton:GetChecked() then 
-				AutoAssistAll()
-				return
-			end
-		elseif status == "queued" then
-			-- wait for pop
-		elseif status == "confirm" then
-			-- enter battleground 
-			if tick > lastAutoJoin + (10*60) then
-				_AcceptBattlefieldPort(i) -- TODO fix
-			end
-			return
-		end
+-- fancy print
+local function ABAPrint(str, p)
+	local public = p or false
+	print("|cfff5deb3[AutoBGA]|r: " .. str)	
+	if p then
+		SendChatMessage("[AutoBGA]: " .. str, "SAY")
 	end
 end
 
@@ -42,8 +23,6 @@ local function _AcceptBattlefieldPort(index)
 			ABAPrint("Battelground ready"); --, please join ASAP to increase the chance to be leader!")
 		end
 
-		attempts = attempts + 1
-		print("test: " .. attempts)
 		RunScript([[
 		if not issecure() then return end
 		--JumpOrAscendStart()
@@ -72,12 +51,33 @@ local function AutoAssistAll()
 	end
 end
 
--- fancy print
-local function ABAPrint(str, p)
-	local public = p or false
-	print("|cfff5deb3[AutoBGA]|r: " .. str)	
-	if p then
-		SendChatMessage("[AutoBGA]: " .. str, "SAY")
+local function tick()
+	-- tick on 0.5s interval
+	local tick = GetTime()
+	if lastTick + 0.5 > tick then return end
+	lastTick = tick
+	
+	-- get Queued info
+	for i=1, 10 do
+		local status = GetBattlefieldStatus(i)
+		if status == "none" then
+			-- Do nothing
+		elseif status == "active" then
+			--print(status .. " ")
+			--print(CompactRaidFrameManagerDisplayFrameEveryoneIsAssistButton:GetChecked())
+			if not CompactRaidFrameManagerDisplayFrameEveryoneIsAssistButton:GetChecked() then 
+				AutoAssistAll()
+				return
+			end
+		elseif status == "queued" then
+			-- wait for pop
+		elseif status == "confirm" then
+			-- enter battleground 
+			if tick > lastAutoJoin + (10*60) then
+				_AcceptBattlefieldPort(i) -- TODO fix
+			end
+			return
+		end
 	end
 end
 
